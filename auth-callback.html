@@ -1,22 +1,58 @@
-<!-- auth-callback.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>OAuth Callback</title>
+<meta charset="UTF-8">
+<title>Authentication Callback</title>
+<style>
+   body {
+     font-family: Arial, sans-serif;
+     padding: 2rem;
+   }
+   .token-section {
+     margin-top: 2rem;
+     word-break: break-word;
+     background: #f4f4f4;
+     padding: 1rem;
+     border-radius: 5px;
+   }
+</style>
 </head>
 <body>
-<h1>Processing sign-in...</h1>
+<h1>Processing sign-in…</h1>
+<p>Please wait while we complete your authentication.</p>
+<div id="result" class="token-section" style="display:none;"></div>
+<div id="error" class="token-section" style="color:red; display:none;"></div>
 <script>
-   const params = new URLSearchParams(window.location.hash.substring(1));
-   const idToken = params.get("id_token");
-   const accessToken = params.get("access_token");
-   if (idToken || accessToken) {
-     console.log("ID Token:", idToken);
-     console.log("Access Token:", accessToken);
-     // You can redirect or process token here
-   } else {
-     console.error("No tokens found.");
+   function parseToken() {
+     const hash = window.location.hash.substring(1); // Remove the "#"
+     const params = new URLSearchParams(hash);
+     const idToken = params.get("id_token");
+     const state = params.get("state");
+     const error = params.get("error");
+     if (error) {
+       document.getElementById("error").innerText = `Error: ${error}`;
+       document.getElementById("error").style.display = 'block';
+       return;
+     }
+     if (!idToken) {
+       document.getElementById("error").innerText = "No token found in URL. Please ensure response_mode=fragment and response_type=id_token are set.";
+       document.getElementById("error").style.display = 'block';
+       return;
+     }
+     try {
+       const parts = idToken.split('.');
+       const payload = JSON.parse(atob(parts[1]));
+       document.getElementById("result").innerHTML = `
+<strong>ID Token:</strong><br>${idToken}<br><br>
+<strong>Decoded Claims:</strong><pre>${JSON.stringify(payload, null, 2)}</pre>
+       `;
+       document.getElementById("result").style.display = 'block';
+     } catch (e) {
+       document.getElementById("error").innerText = "Failed to decode token.";
+       document.getElementById("error").style.display = 'block';
+     }
    }
+   window.onload = parseToken;
 </script>
 </body>
 </html>

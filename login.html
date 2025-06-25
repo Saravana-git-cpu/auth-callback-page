@@ -8,20 +8,8 @@
 <button onclick="signIn()">Sign in with Google</button>
 <script>
    function signIn() {
-     const clientId = "b0edc2d0-12ae-4b0d-9a23-c14ee002d7f7"; // Your Entra app client ID
-     const tenantId = "9324d8f4-a8e3-438a-8f33-dab66b324c63"; // Your external tenant ID
-     const redirectUri = encodeURIComponent("https://black-rock-0334cbc10.6.azurestaticapps.net/auth-callback.html");
-     const nonce = "abc123"; // For basic replay protection
-     const authUrl =
-       `https://login.microsoftonline.com/${tenantId}/oauth2/v2.0/authorize` +
-       `?client_id=${clientId}` +
-       `&response_type=id_token` +
-       `&redirect_uri=${redirectUri}` +
-       `&response_mode=fragment` +
-       `&scope=openid email` +
-       `&nonce=${nonce}` +
-       `&prompt=login` +
-       `&claims=${encodeURIComponent(JSON.stringify({ tfp: "ForsaExternal" }))}`;
+     // Use your actual External ID user flow name
+     const authUrl = "https://login.microsoftonline.com/9324d8f4-a8e3-438a-8f33-dab66b324c63/federation/oauth2?flowName=ForsaExternal";
      window.location.href = authUrl;
    }
 </script>
